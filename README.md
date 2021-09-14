@@ -23,3 +23,11 @@ ARGO_TOKEN="Bearer $(kubectl -n argo get secret $SECRET -o=jsonpath='{.data.toke
 echo $ARGO_TOKEN
 Bearer bhalblahblahblahblah...
 ```
+- submit the workflow , Remove watch from submit command if you would like to have prompt back.
+```
+cd workflows
+argo submit -n argo --watch hello-world.yaml
+argo list -n argo
+argo get -n argo @latest
+argo logs -n argo @latest
+``` 
