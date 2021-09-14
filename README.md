@@ -16,3 +16,10 @@ argo list -n argo
 argo get -n argo @latest
 argo logs -n argo @latest
 ```
+- Access UI with token 
+```
+SECRET=$(kubectl -n argo get sa argo-server -o=jsonpath='{.secrets[0].name}')
+ARGO_TOKEN="Bearer $(kubectl -n argo get secret $SECRET -o=jsonpath='{.data.token}' | base64 --decode)"
+echo $ARGO_TOKEN
+Bearer bhalblahblahblahblah...
+```
