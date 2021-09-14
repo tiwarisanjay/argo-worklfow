@@ -1,0 +1,12 @@
+#Create Namespace for workflow to run
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: workflows
+---
+#Create Service Account for workflows 
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: workflows
+  namespace: workflows
