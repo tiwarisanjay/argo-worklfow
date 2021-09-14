@@ -1,0 +1,68 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: vars-
+  labels:
+    workflows.argoproj.io/archive-strategy: "false"
+spec:
+  entrypoint: full
+  serviceAccountName: workflow
+  volumes:
+  - name: kaniko-secret
+    secret:
+      secretName: regcred
+      items:
+        - key: .dockerconfigjson
+          path: config.json
+  templates:
+  - name: full
+    dag:
+      tasks:
+      - name: simple
+        template: message
+        arguments:
+          parameters:
+          - name: message
+            value: This is a simple message
+      - name: loop
+        template: message
+        arguments:
+          parameters:
+          - name: message
+            value: This is the loop, iteration {{item}}
+        withItems:
+        - "1"
+        - "2"
+        - "3"
+      - name: status
+        template: message
+        arguments:
+          parameters:
+          - name: message
+            value: "This is the status of the simple task: {{tasks.simple.status}}"
+        dependencies:
+        - simple
+      - name: git-clone
+        template: git-clone
+  - name: message
+    inputs:
+      parameters:
+      - name: message
+    container:
+      image: alpine
+      command: [echo]
+      args:
+      - "{{inputs.parameters.message}}"
+  - name: git-clone
+    inputs:
+      artifacts:
+      - name: source
+        path: /src
+        git:
+          repo: https://github.com/vfarcic/argo-workflows-demo.git
+          revision: HEAD
+    container:
+      image: alpine
+      command: [ls]
+      args:
+      - /src
